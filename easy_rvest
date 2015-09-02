@@ -1,0 +1,54 @@
+library(rvest) 
+# 簡單好用的 web scraping 套件，直接支援 ccs 與 xptah 選取
+# 支援直接用 pipeline 方式編寫，避免恐怖的巢狀地獄
+
+# 超簡單範例 
+# http://news.ltn.com.tw/list/BreakingNews 自由時報即時總覽的第一頁新聞標題
+# 蘋果日報最近的全幅廣告真的很討人厭 > <"
+
+# 使用 firebug 等工具協助選取文章標題  
+# 此例中 
+# css 選取語法  .picword
+# xpath 選取語法   //*[@id='newslistul']/li/a
+
+# 作業流程
+# (1)要捉的網頁是什麼 → (2)把網頁捉下來 → (3)選取所需新聞內容(使用 CSS 或 XPATH ) → (4)取得純文字(text) 
+
+# 對應的 R 作業流程
+# (1) url = "???"
+# (2) html( )
+# (3) html_nodes()
+# (4) html_text()
+ 
+# 方法1
+# 使用 CSS 抽取文章標題(文字內容)
+data_css = html(url) %>% html_nodes(".picword") %>% html_text()
+
+# 方法2
+# 使用 xptah 抽取文章標題(文字內容)
+data_xpath = html(url) %>% html_nodes( xpath = "//*[@id='newslistul']/li/a") %>% html_text()
+
+# 完成此次範例
+
+#########################   
+
+# 取得每篇新聞的超連結??  調整 html_text() → html_attr( "href")
+# 就可以取得每篇新聞的  url
+
+data_css_href = html(url) %>% html_nodes(".picword") %>% html_attr( "href")
+
+### 以 data.frame  的方式紀錄資料??
+
+my_news =
+data.frame(
+title = html(url) %>% html_nodes(".picword") %>% html_text()  , 
+title_href = html(url) %>% html_nodes(".picword") %>% html_attr( "href")  ,
+stringsAsFactors=FALSE)
+
+
+# 檢視資料
+View(my_news)
+
+
+### 參考連結 套件作者 Github
+### https://github.com/hadley/rvest  
